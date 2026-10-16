@@ -1,0 +1,57 @@
+{
+  "base": "backusVentasDB",
+  "almacen": "pedidos",
+  "registros": [
+    {
+      "fecha": "2026-10-16T17:06:07.855Z",
+      "lineas": [
+        {
+          "productoId": 1,
+          "producto": "Cristal 620 ml",
+          "precioUnitario": 7.5,
+          "cantidad": 2,
+          "subtotal": 15
+        },
+        {
+          "productoId": 2,
+          "producto": "Pilsen Callao 620 ml",
+          "precioUnitario": 8,
+          "cantidad": 3,
+          "subtotal": 24
+        }
+      ],
+      "total": 39,
+      "origen": "ONLINE",
+      "estado": "PENDIENTE",
+      "id": 1
+    },
+    {
+      "fecha": "2026-10-16T17:06:08.402Z",
+      "lineas": [
+        {
+          "productoId": 1,
+          "producto": "Cristal 620 ml",
+          "precioUnitario": 7.5,
+          "cantidad": 1,
+          "subtotal": 7.5
+        }
+      ],
+      "total": 7.5,
+      "origen": "OFFLINE",
+      "estado": "PENDIENTE",
+      "id": 2
+    }
+  ],
+  "cache": [
+    "ngsw:/:db:control",
+    "ngsw:/:fa2b0e0b553e6788a4073ff83f7717569ecbfc44:assets:app:cache",
+    "ngsw:/:db:fa2b0e0b553e6788a4073ff83f7717569ecbfc44:assets:app:meta",
+    "ngsw:/:1:data:catalogo:cache",
+    "ngsw:/:db:1:data:catalogo:lru",
+    "ngsw:/:db:1:data:catalogo:age",
+    "ngsw:/:1:data:avisos:cache",
+    "ngsw:/:db:1:data:avisos:lru",
+    "ngsw:/:db:1:data:avisos:age"
+  ],
+  "serviceWorker": "http://localhost:8180/ngsw-worker.js"
+}

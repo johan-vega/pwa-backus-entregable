@@ -1,0 +1,81 @@
+<!-- Shell compartido: recibe pestaña actual, nombre de sección, contadores y evento de navegación. -->
+<app-shell brand="Backus" [section]="section" [active]="active" [tabs]="tabs" (navigate)="navigate($event)">
+  <!-- Resumen derivado de los productos cargados y los pedidos leídos desde IndexedDB. -->
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">TU RUTA, SIEMPRE ACTIVA</p>
+      <h1>{{ active === 'catalogo' ? 'Prepara tu próximo pedido' : active === 'historial' ? 'Cada pedido, a la mano' :
+        'Tus mensajes de ruta' }}</h1>
+      <p>{{ active === 'catalogo' ? 'Consulta el catálogo y registra tus pedidos, con o sin conexión.' : active ===
+        'historial' ? 'Consulta el historial y los detalles guardados en este dispositivo.' : 'Registra notas del
+        vendedor y consúltalas incluso sin conexión.' }}</p>
+    </div>
+    <div class="heading-icon" aria-hidden="true">▦</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="stat-icon" aria-hidden="true">▦</span>
+      <div><strong>{{ products.length }}</strong><span>Productos en catálogo</span></div>
+    </div>
+    <div class="stat"><span class="stat-icon" aria-hidden="true">◷</span>
+      <div><strong data-testid="pending-count">{{ pending }}</strong><span>Pedidos pendientes</span></div>
+    </div>
+    <div class="stat"><span class="stat-icon" aria-hidden="true">▤</span>
+      <div><strong>{{ orders.length }}</strong><span>Pedidos guardados</span></div>
+    </div>
+  </div>
+  <!-- Aviso de conexión: online/offline viene de ConnectivityService; el texto online de NoticeService. -->
+  <div class="notice" [class.offline-note]="!network.online()"><span class="notice-icon" aria-hidden="true">ⓘ</span>
+    <div class="notice-text"><strong>{{ network.online() ? 'Tu trabajo se guarda aquí. ' : 'Modo sin conexión. '
+        }}</strong>{{ network.online() ? notice.message() : 'Puedes seguir registrando pedidos y mensajes. El catálogo
+      requiere una visita previa con conexión.' }}</div>
+  </div>
+  <!-- Mensajes temporales de la aplicación y errores recuperables de IndexedDB/catálogo. -->
+  @if (network.recovered()) {<div class="notice" role="status">Conexión recuperada. Los pedidos siguen PENDIENTES: no
+    existe una API para sincronizarlos.</div>}
+  @if (notification) {<div class="alert" [class.error]="error" [attr.role]="error ? 'alert' : 'status'"
+    data-testid="notification">{{ notification }}</div>}
+  @if (storageError) {<div class="alert error" role="alert">{{ storageError }} <button class="text-button"
+      (click)="loadLocal()">Reintentar lectura</button></div>}
+  <!-- Vista principal: el catálogo emite altas y el carrito emite quitar/guardar al componente raíz. -->
+  @if (active === 'catalogo') {
+  @if (loadError) {<div class="alert error" role="alert">{{ loadError }} <button class="text-button"
+      (click)="loadCatalog()">Reintentar catálogo</button></div>}
+  <div class="columns">
+    <div>@if (loading) {<div class="panel loading" role="status">Cargando catálogo…</div>} @else {<app-catalog
+        [products]="products" [busy]="busy" (add)="add($event)" />}</div><app-cart [lines]="lines" [total]="total"
+      [busy]="busy" (remove)="remove($event)" (save)="saveOrder()" />
+  </div>
+  }
+  <!-- Historial leído desde el almacén pedidos de backusVentasDB. -->
+  @if (active === 'historial') {<app-history [orders]="orders" />}
+  <!-- Mensajes locales: la columna derecha captura una nota y la izquierda muestra IndexedDB. -->
+  @if (active === 'mensajes') {
+  <div class="columns">
+    <section class="panel panel-pad">
+      <div class="section-heading">
+        <div>
+          <h2>Mensajes guardados</h2>
+          <p>Notas locales del vendedor.</p>
+        </div><span class="count">{{ messages.length }} mensajes</span>
+      </div>@for (message of messages; track message.id) {<article class="record">
+        <div class="record-heading">
+          <h3>Mensaje #{{ message.id }}</h3><span class="tag">{{ message.estado }}</span>
+        </div>
+        <p class="comment">{{ message.contenido }}</p>
+        <p class="meta">{{ message.fecha | date:'dd/MM/yyyy, HH:mm' }} · Origen {{ message.origen }}</p>
+      </article>} @empty {<div class="empty"><span class="empty-symbol">✉</span><strong>Aún no tienes
+          mensajes</strong>Guarda una nota para tu siguiente visita.</div>}
+    </section>
+    <section class="panel panel-pad">
+      <h2>Mensaje del vendedor</h2>
+      <p class="meta">Una nota de ruta que va contigo.</p>
+      <form (ngSubmit)="saveMessage()"><label class="field-label" for="message">Mensaje</label><textarea id="message"
+          name="message" [(ngModel)]="messageText" placeholder="Escribe tu mensaje…"
+          [disabled]="busy"></textarea><button class="button full" style="margin-top:16px" [disabled]="busy">{{ busy ?
+          'Guardando…' : 'Guardar mensaje local' }}</button>
+        <p class="help">Guardado local en IndexedDB. No se envía a un servidor.</p>
+      </form>
+    </section>
+  </div>
+  }
+</app-shell>

@@ -1,0 +1,8 @@
+[
+  {"id":1,"producto":"Cristal 620 ml","categoria":"Cerveza","precio":7.5,"presentacion":"Botella · 620 ml","imagen":"illustrations/cristal.svg"},
+  {"id":2,"producto":"Pilsen Callao 620 ml","categoria":"Cerveza","precio":8,"presentacion":"Botella · 620 ml","imagen":"illustrations/pilsen.svg"},
+  {"id":3,"producto":"Cusqueña 620 ml","categoria":"Cerveza","precio":9,"presentacion":"Botella · 620 ml","imagen":"illustrations/cusquena.svg"},
+  {"id":4,"producto":"Cristal lata 355 ml","categoria":"Cerveza","precio":5.5,"presentacion":"Lata · 355 ml","imagen":"illustrations/cristal-lata.svg"},
+  {"id":5,"producto":"Agua San Mateo 600 ml","categoria":"Agua","precio":2.5,"presentacion":"Botella · 600 ml","imagen":"illustrations/agua.svg"},
+  {"id":6,"producto":"Guaraná 500 ml","categoria":"Gaseosa","precio":3.5,"presentacion":"Botella · 500 ml","imagen":"illustrations/guarana.svg"}
+]

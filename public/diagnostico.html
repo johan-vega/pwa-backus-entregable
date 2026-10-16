@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Diagnóstico PWA local</title>
+    <style>
+        body {
+            font: 14px "Segoe UI", sans-serif;
+            background: #f3f6fa;
+            color: #182339;
+            margin: 0;
+            padding: 32px
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto
+        }
+
+        h1 {
+            font-size: 28px
+        }
+
+        p {
+            color: #5b6c83;
+            line-height: 1.7
+        }
+
+        section {
+            background: white;
+            border: 1px solid #dae2ed;
+            border-radius: 10px;
+            margin: 18px 0;
+            padding: 20px
+        }
+
+        pre {
+            font: 12px/1.6 Consolas, monospace;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #0033a0
+        }
+
+        button {
+            padding: 10px 18px;
+            background: #0033a0;
+            border: 0;
+            border-radius: 6px;
+            color: white
+        }
+
+        a {
+            color: #0033a0
+        }
+    </style>
+</head>
+
+<body>
+    <main><a href="/">← Volver a la aplicación</a>
+        <h1>Diagnóstico PWA · Backus Ventas</h1>
+        <p>Lectura real del navegador actual. Esta página solo consulta el manifiesto, el Service Worker, las claves de
+            Cache Storage y los registros de IndexedDB. No es una captura de DevTools.</p><button
+            onclick="load()">Actualizar diagnóstico</button>
+        <div id="result" aria-live="polite"></div>
+    </main>
+    <script>
+        // Lee el estado real del origen actual; la página solo consulta y no modifica datos ni caches.
+        async function load() {
+            const result = document.querySelector('#result'); result.replaceChildren();
+            function show(title, value) { const s = document.createElement('section'); const h = document.createElement('h2'); h.textContent = title; const p = document.createElement('pre'); p.textContent = JSON.stringify(value, null, 2); s.append(h, p); result.append(s); }
+            try {
+                const r = await navigator.serviceWorker.getRegistration(); show('Service Worker', { controlador: navigator.serviceWorker.controller?.scriptURL || 'Sin controlador en esta página', activo: r?.active?.scriptURL, estado: r?.active?.state }); show('Manifest', await (await fetch('/manifest.webmanifest')).json()); show('Cache Storage', await caches.keys());
+                const db = await new Promise((resolve, reject) => { const r = indexedDB.open('backusVentasDB'); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); });
+                try { for (const name of db.objectStoreNames) { const rows = await new Promise((resolve, reject) => { const tx = db.transaction(name, 'readonly'); const r = tx.objectStore(name).getAll(); tx.oncomplete = () => resolve(r.result); tx.onerror = () => reject(tx.error); }); show('IndexedDB · backusVentasDB / ' + name, rows); } } finally { db.close(); }
+            } catch (e) { show('Error de diagnóstico', String(e)); }
+        }
+        load();</script>
+</body>
+
+</html>
